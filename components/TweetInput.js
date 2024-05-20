@@ -23,7 +23,6 @@ export default function TweetInput() {
       timestamp: serverTimestamp(),
       likes: [],
       tweet: text,
-      comment: []
     });
 
     setText("")

@@ -5,7 +5,9 @@ import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "@/firebase";
 
 export default function PostsFeed(){
-const [tweets, setTweets] = useState([])
+const [tweets, setTweets] = useState([]);
+
+
 useEffect(() => {
 
 const q = query(collection(db, "posts"), orderBy("timestamp", "desc"))
@@ -25,7 +27,7 @@ return unsubscribe
             <TweetInput />
 
             {tweets.map(tweet => {
-                return <Tweet key={tweet.id } tweet={tweet.id} data={tweet.data()} />
+                return <Tweet key={tweet.id } id={tweet.id} data={tweet.data()} />
             })}
         </div>
     )
