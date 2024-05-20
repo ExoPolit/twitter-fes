@@ -46,6 +46,7 @@ export default function Trending() {
             <img
               className="w-11 h-11 object-cover rounded-full"
               src="/assets/bragg.png"
+              alt=""
             />
             <div>
               <div className="flex space-x-1">
@@ -63,6 +64,7 @@ export default function Trending() {
             <img
               className="w-11 h-11 object-cover rounded-full"
               src="/assets/bragg.png"
+              alt=""
             />
             <div>
               <div className="flex space-x-1">
@@ -80,6 +82,7 @@ export default function Trending() {
             <img
               className="w-11 h-11 object-cover rounded-full"
               src="/assets/bragg.png"
+              alt=""
             />
             <div>
               <div className="flex space-x-1">

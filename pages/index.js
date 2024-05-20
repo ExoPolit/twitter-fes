@@ -23,7 +23,7 @@ export default function Home() {
         <Trending />
       </div>
 
-      <CommentModal />
+      {/* <CommentModal /> */}
       {!userName && <Banner />}
     </div>
   );

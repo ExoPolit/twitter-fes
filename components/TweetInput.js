@@ -33,6 +33,7 @@ export default function TweetInput() {
       <img
         className="w-11 h-11 rounded-full object-cover"
         src={user.photoUrl}
+        alt=""
       />
       <div className="w-full">
         <textarea

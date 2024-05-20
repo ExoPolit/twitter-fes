@@ -74,6 +74,7 @@ export default function CommentModal() {
               <img
                 className="w-12 h-12 object-cover rounded-full"
                 src={tweetDetails.photoUrl}
+                alt=""
               />
 
               <div>
@@ -94,6 +95,7 @@ export default function CommentModal() {
               <img
                 className="w-12 h-12 object-cover rounded-full"
                 src={userImg}
+                alt=""
               />
 
               <div className="w-full">
