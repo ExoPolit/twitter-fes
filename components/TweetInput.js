@@ -1,20 +1,27 @@
-import { db } from "@/firebase";
+import { db, storage } from "@/firebase";
 import {
   CalendarIcon,
   ChartBarIcon,
   EmojiHappyIcon,
   LocationMarkerIcon,
   PhotographIcon,
+  XIcon,
 } from "@heroicons/react/outline";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { useState } from "react";
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
 export default function TweetInput() {
   const user = useSelector((state) => state.user);
   const [text, setText] = useState("");
+  const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const filePickerRef = useRef(null)
   // adding logic for tweet
   async function sendTweet() {
+
+    setLoading(true)
     const docRef = await addDoc(collection(db, "posts"), {
       username: user.username,
       name: user.name,
@@ -24,18 +31,44 @@ export default function TweetInput() {
       likes: [],
       tweet: text,
     });
+    if(image){
+      //Create Image ref | takes two arguments
+      const imageRef = ref(storage, `tweetImages/${docRef.id}`)
+      //Upload image to storage | takes three arguments
+      const uploadImage = await uploadString(imageRef, image, "data_url")
+      //Download URL to show the image in the tweet | takes the imageRef
+      const downloadURL = await getDownloadURL(imageRef)
+      await updateDoc(doc(db, "posts", docRef.id), {
+        image: downloadURL
+      })
+    }
+    setText("");
+    setImage(null)
+    setLoading(false)
+  }
 
-    setText("")
+  function addImageToTweet(e) {
+    const reader = new FileReader() // Create Filereader
+    //Check if user selected a file
+    if(e.target.files[0]){
+      reader.readAsDataURL(e.target.files[0])
+    }
+
+    reader.addEventListener("load", e => {
+      setImage(e.target.result)
+    })
   }
 
   return (
     <div className="flex space-x-3 p-3 border-b border-gray-700">
       <img
         className="w-11 h-11 rounded-full object-cover"
-        src={user.photoUrl}
+        src={user.photoUrl || "/assets/twitter-logo.png"}
         alt=""
       />
-      <div className="w-full">
+
+      {loading && <h1 className="text-2xl text-gray-500">Uploading post...</h1>}
+    {(!loading &&  <div className="w-full">
         <textarea
           className="
                 bg-transparent 
@@ -49,11 +82,32 @@ export default function TweetInput() {
           value={text}
         />
 
+        {image && (
+          <div className="relative mb-4">
+            <div 
+            onClick={() => setImage(null)}
+            className="absolute 
+            top-1 
+            left-1 bg-[#272c26] rounded-full w-8 h-8 flex justify-center items-center cursor-pointer
+            hover:bg-white hover:bg-opacity-10
+            ">
+              <XIcon className="h-5" />
+            </div>
+            <img className="rounded-2xl max-h-80 object-contain" src={image} />
+          </div>
+        )}
+
         <div className="flex justify-between border-t border-gray-700 pt-4">
           {/* Icons DIV */}
           <div className="flex space-x-0">
-            <div className="iconsAnimation">
+            <div
+            onClick={() => filePickerRef.current.click()}
+            className="iconsAnimation">
               <PhotographIcon className=" h-[22px] text-[#1d9bf0]" />
+              <input 
+              onChange={addImageToTweet}
+              ref={filePickerRef}
+              className="hidden" type="file" />
             </div>
             <div className="iconsAnimation">
               <ChartBarIcon className=" h-[22px] text-[#1d9bf0]" />
@@ -69,15 +123,16 @@ export default function TweetInput() {
             </div>
           </div>
           <button
-          onClick={sendTweet}
-          disabled={!text}
-          className="bg-[#1d9bf0] rounded-full px-4 py-1.5
+            onClick={sendTweet}
+            disabled={!text && !image}
+            className="bg-[#1d9bf0] rounded-full px-4 py-1.5
           disabled:opacity-50
-          ">
+          "
+          >
             Tweet
           </button>
         </div>
-      </div>
+      </div>)}
     </div>
   );
 }
